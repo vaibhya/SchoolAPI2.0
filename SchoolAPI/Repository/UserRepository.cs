@@ -11,7 +11,7 @@ namespace SchoolAPI.Repository
         }
         public User GetByUsername(string username)
         {
-            return _dbContext.Users.Find(username);
+            return _dbContext.Users.Where(x=>x.Username==username).FirstOrDefault();
         }
 
         public void Add(User user)

@@ -5,6 +5,9 @@ using SchoolAPI.Repository;
 using SchoolAPI.Service;
 using SchoolAPI.Configuration;
 using System.Reflection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace SchoolAPI
 {
@@ -52,6 +55,26 @@ namespace SchoolAPI
                 var connectionString = _configuration.GetConnectionString("DBConnection");
                 options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
             });
+
+            // JWT Configuration
+            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
+            services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(key)
+                    };
+                });
         }
 
         /// <summary>
@@ -67,6 +90,7 @@ namespace SchoolAPI
             }
 
             app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
         }

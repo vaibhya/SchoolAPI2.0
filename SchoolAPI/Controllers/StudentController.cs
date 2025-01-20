@@ -1,20 +1,18 @@
-﻿using AutoMapper;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.DataAnnotations;
-using SchoolAPI.Model;
 using SchoolAPI.ModelDTO;
 using SchoolAPI.Service;
-using System.ComponentModel.DataAnnotations;
 
 namespace SchoolAPI.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("School")]
 
     public class StudentController : Controller
     {
         private IStudentService _service;
-        public StudentController(IStudentService service) 
+        public StudentController(IStudentService service)
         {
             _service = service;
 
@@ -22,9 +20,9 @@ namespace SchoolAPI.Controllers
 
         [HttpGet]
         [Route("GetStudents")]
-        public IActionResult GetAllStudents(string? firstName, string? lastName, string? email, int? page=1, int? limit = 10)
+        public IActionResult GetAllStudents(string? firstName, string? lastName, string? email, int? page = 1, int? limit = 10)
         {
-            var students = _service.GetAllStudents(firstName,lastName,email,page,limit);
+            var students = _service.GetAllStudents(firstName, lastName, email, page, limit);
             return Ok(students);
         }
 
@@ -59,7 +57,7 @@ namespace SchoolAPI.Controllers
         public IActionResult DeleteStudent(int id)
         {
             var response = _service.DeleteStudent(id);
-            if(response == 0)
+            if (response == 0)
             {
                 return NotFound();
             }
